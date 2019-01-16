@@ -87,23 +87,31 @@ class ThemThucAn: UIViewController, UITableViewDataSource, UITableViewDelegate {
         ref.child("users").child(userID!).observeSingleEvent(of: .value, with: { (snapshot) in
         
             let value = snapshot.value as? Dictionary<String, AnyObject>
-            let food = value!["FOOD"] as! NSDictionary
-            for i in food{
-                
-                let data=i.value as! NSDictionary;
-                let maThucAn=data["MATHUCPHAM"] as!String
-                let tenThucAn=data["TENTHUCPHAM"] as!String
-                let gia=data["GIA"] as! Int
-                var k:(String,Int,String,Int)!=("",0,"",0);
-                for j in self.thucAnDaDat{
-                    if maThucAn==j.0{
-                        k=j;
-                        break;
+            let value2 = value!["FOOD"]
+            if(value2 != nil){
+                let food=value2 as! NSDictionary
+                for i in food{
+                    
+                    let data=i.value as! NSDictionary;
+                    let maThucAn=data["MATHUCPHAM"] as!String
+                    let tenThucAn=data["TENTHUCPHAM"] as!String
+                    let gia=data["GIA"] as! Int
+                    var k:(String,Int,String,Int)!=("",0,"",0);
+                    for j in self.thucAnDaDat{
+                        if maThucAn==j.0{
+                            k=j;
+                            break;
+                        }
                     }
+                    self.arr.append((maThucAn,k.1,tenThucAn,gia))
                 }
-                self.arr.append((maThucAn,k.1,tenThucAn,gia))
             }
-            
+            else{
+                let alertController = UIAlertController(title: "Thông Báo", message: "Không có Thức  ", preferredStyle: .alert)
+                let defaultAction = UIAlertAction(title: "OK", style: .default, handler:nil)
+                alertController.addAction(defaultAction)
+                self.present(alertController, animated: true, completion: nil)
+            }
             self.tableView_thucAn.reloadData();
         }) { (error) in
             print(error.localizedDescription)
